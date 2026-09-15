@@ -1,4 +1,13 @@
 {
   "color": "blue",
-  "testkey": "testvalue"
+  "testkey": "testvalue",
+  "profile": {
+    "favourite_genre": "melodic_techno"
+  },
+  "catalogue": {
+    "Sunrise": {
+      "genre": "ambient",
+      "status": "unfinished"
+    }
+  }
 }
