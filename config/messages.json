@@ -1,0 +1,8 @@
+{
+  "agentB": [
+    {
+      "from": "agentA",
+      "msg": "hello"
+    }
+  ]
+}
