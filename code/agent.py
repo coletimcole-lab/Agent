@@ -1,3 +1,18 @@
+
+import os
+import sys
+
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PARENT_DIR = os.path.dirname(CURRENT_DIR)
+sys.path.append(PARENT_DIR)
+
+from specs_loader import load_specs
+from specs_loader import load_repo_context
+
+SYSTEM_PROMPT = load_specs() + "\n\n" + load_repo_context()
+
+
+
 import time
 import json
 from fastapi import FastAPI, Request
@@ -15,20 +30,29 @@ app = FastAPI()
 from openai import OpenAI
 client = OpenAI()
 
-
-
 DEFAULT_MODEL = "gpt-5.4-mini"
 
-def call_llm(messages, model: str = DEFAULT_MODEL):
+def call_llm(user_message, model: str = DEFAULT_MODEL):
+    messages = [
+        {
+            "role": "system",
+            "content": SYSTEM_PROMPT
+        },
+        {
+            "role": "user",
+            "content": user_message
+        }
+    ]
+
     response = client.chat.completions.create(
         model=model,
         messages=messages
     )
+
     return response.choices[0].message.content
 
 
-
-
+    return response.choices[0].message.content[0].text
 
 # -------------------------
 # Logging
@@ -354,19 +378,15 @@ async def task(request: Request):
 
 
 def run_terminal_agent():
-    system_context = load_repo_context()
-
-    messages = [
-        {"role": "system", "content": system_context}
-    ]
-
     print("Agent ready. Type your message:")
 
     while True:
         user_input = input("You: ")
-        messages.append({"role": "user", "content": user_input})
-        reply = call_llm(messages)
+
+        reply = call_llm(user_input)
+
         print("Agent:", reply)
+
 
 if __name__ == "__main__":
     run_terminal_agent()
